@@ -30,7 +30,7 @@ bot_configuration = BotConfiguration(
 
 viber = Api(bot_configuration)
 
-engine = create_engine("sqlite:///database.db")
+engine = create_engine("postgres://zjguzaoffvbgzj:57e92920b8896da21387e6977b7f39510dacb38808c786b751888389272b79de@ec2-54-247-169-129.eu-west-1.compute.amazonaws.com:5432/dealhb2vdnm1f6")
 
 Base = declarative_base()
 
