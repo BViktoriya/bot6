@@ -127,7 +127,7 @@ def question(game):
         bot_response = TextMessage(text=f"Верно {game.count_correct} из {game.count_all}", keyboard=START_KBD,
                                    tracking_data='tracking_data')
         viber.send_messages(game.viber_id, [bot_response])
-	session.close()
+    session.close()
 
 # обработать ответ
 def answer(text, game):
@@ -146,7 +146,7 @@ def answer(text, game):
     # всего ответов
     game.count_all += 1
     viber.send_messages(game.viber_id, [bot_response])
-	session.close()
+    session.close()
     question(game)
 	
 
@@ -157,7 +157,7 @@ def example(game, number):
                                keyboard=CreateKBD(game), tracking_data='tracking_data')
     keyboard = KeyboardMessage(tracking_data='tracking_data', keyboard=CreateKBD(game))
     viber.send_messages(game.viber_id, [bot_response])
-	session.close()
+    session.close()
 
 
 # клавиатура ползователя
@@ -237,6 +237,7 @@ def CreateKBD(game):
             }
         ]
     }
+    session.close()
     return KEYBOARD
 
 
@@ -302,8 +303,8 @@ def incoming():
             else:
                 # ответ пользователя
                 answer(viber_request.message.text, game)
-	session.close()
-	
+    session.close()
+    
     return Response(status=200)
 
 
