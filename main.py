@@ -110,7 +110,7 @@ def next_word(game):
             Learning.word == game.word["word"]).first()
         if correct_answer >= 3:
             next_word(game)
-	session.close()
+    session.close()
 
 # вопрос
 def question(game):
