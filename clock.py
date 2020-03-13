@@ -8,7 +8,7 @@ import datetime
 bot_configuration = BotConfiguration(
     name='LearnEnglishBot',
     avatar='http://viber.com/avatar.jpg',
-    auth_token=TOKEN
+    auth_token=TOKEN 
 )
 viber = Api(bot_configuration)
 
@@ -42,8 +42,8 @@ KEYBOARD = {
     ]
 }
 
-# словарь соответсвий пользователя и времени последнего напоминания
-user_reminder = {}
+# словарь пользователя и его времени последнего оповещения
+user_alert = {}
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -55,8 +55,8 @@ def timed_job():
     session = Session()
     users = session.query(Users)
     for u in users:
-        if datetime.datetime.now() >= u.time_remind:
+        if datetime.datetime.now() >= u.t_alert:
             viber.send_messages(u.viber_id, [TextMessage(text="Пора учить слова", keyboard=KEYBOARD,
                                                          tracking_data='tracking_data')])
-
+	session.close()
 sched.start()

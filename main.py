@@ -16,6 +16,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.pool import NullPool
 
 with open('english_words.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
@@ -30,7 +31,7 @@ bot_configuration = BotConfiguration(
 
 viber = Api(bot_configuration)
 
-engine = create_engine("postgres://zjguzaoffvbgzj:57e92920b8896da21387e6977b7f39510dacb38808c786b751888389272b79de@ec2-54-247-169-129.eu-west-1.compute.amazonaws.com:5432/dealhb2vdnm1f6")
+engine = create_engine("postgres://zjguzaoffvbgzj:57e92920b8896da21387e6977b7f39510dacb38808c786b751888389272b79de@ec2-54-247-169-129.eu-west-1.compute.amazonaws.com:5432/dealhb2vdnm1f6", poolclass=NullPool)
 
 Base = declarative_base()
 
@@ -43,7 +44,7 @@ class Users(Base):
     fio = Column(String, nullable=False, default='John Doe')
     viber_id = Column(String, nullable=False, unique=True)
     t_last_answer = Column(DateTime)
-    time_remind = Column(DateTime)
+    t_alert = Column(DateTime)
 
     words = relationship("Learning", back_populates='user')
 
@@ -109,6 +110,7 @@ def next_word(game):
             Learning.word == game.word["word"]).first()
         if correct_answer >= 3:
             next_word(game)
+	session.close()
 
 # вопрос
 def question(game):
@@ -125,7 +127,7 @@ def question(game):
         bot_response = TextMessage(text=f"Верно {game.count_correct} из {game.count_all}", keyboard=START_KBD,
                                    tracking_data='tracking_data')
         viber.send_messages(game.viber_id, [bot_response])
-
+	session.close()
 
 # обработать ответ
 def answer(text, game):
@@ -144,7 +146,9 @@ def answer(text, game):
     # всего ответов
     game.count_all += 1
     viber.send_messages(game.viber_id, [bot_response])
+	session.close()
     question(game)
+	
 
 # привести пример
 def example(game, number):
@@ -153,6 +157,7 @@ def example(game, number):
                                keyboard=CreateKBD(game), tracking_data='tracking_data')
     keyboard = KeyboardMessage(tracking_data='tracking_data', keyboard=CreateKBD(game))
     viber.send_messages(game.viber_id, [bot_response])
+	session.close()
 
 
 # клавиатура ползователя
@@ -277,7 +282,7 @@ def incoming():
         if isinstance(viber_request.message, TextMessage):
             if viber_request.message.text == "Старт":
                 user.t_last_answer = datetime.datetime.now()
-                user.time_remind = datetime.datetime.now() + datetime.timedelta(minutes=10)
+                user.t_alert = datetime.datetime.now() + datetime.timedelta(minutes=10)
                 session.commit()
                 game.count_all = 0
                 game.count_correct = 0
@@ -292,12 +297,13 @@ def incoming():
                 else:
                     count_example += 1
             elif viber_request.message.text == 'Напомнить позже':
-                user.time_remind = datetime.datetime.now() + datetime.timedelta(minutes=10)
+                user.t_alert = datetime.datetime.now() + datetime.timedelta(minutes=10)
                 session.commit()
             else:
                 # ответ пользователя
                 answer(viber_request.message.text, game)
-
+	session.close()
+	
     return Response(status=200)
 
 
