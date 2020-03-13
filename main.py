@@ -108,8 +108,8 @@ def next_word(game):
     else:
         correct_answer = session.query(Learning.correct_answer).filter(Learning.user_id == user_id).filter(
             Learning.word == game.word["word"]).first()
-        if correct_answer > 0:
-            next_word(game)
+        #if correct_answer > 0:
+        #   next_word(game)
     session.close()
 
 # вопрос
