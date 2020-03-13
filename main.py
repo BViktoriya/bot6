@@ -44,7 +44,7 @@ class Users(Base):
     fio = Column(String, nullable=False, default='John Doe')
     viber_id = Column(String, nullable=False, unique=True)
     t_last_answer = Column(DateTime)
-    t_alert = Column(DateTime)
+    time_remind = Column(DateTime)
 
     words = relationship("Learning", back_populates='user')
 
@@ -283,7 +283,7 @@ def incoming():
         if isinstance(viber_request.message, TextMessage):
             if viber_request.message.text == "Старт":
                 user.t_last_answer = datetime.datetime.now()
-                user.t_alert = datetime.datetime.now() + datetime.timedelta(minutes=10)
+                user.time_remind = datetime.datetime.now() + datetime.timedelta(minutes=10)
                 session.commit()
                 game.count_all = 0
                 game.count_correct = 0
@@ -298,7 +298,7 @@ def incoming():
                 else:
                     count_example += 1
             elif viber_request.message.text == 'Напомнить позже':
-                user.t_alert = datetime.datetime.now() + datetime.timedelta(minutes=10)
+                user.time_remind = datetime.datetime.now() + datetime.timedelta(minutes=10)
                 session.commit()
             else:
                 # ответ пользователя

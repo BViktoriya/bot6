@@ -55,7 +55,7 @@ def timed_job():
     session = Session()
     users = session.query(Users)
     for u in users:
-        if datetime.datetime.now() >= u.t_alert:
+        if datetime.datetime.now() >= u.time_remind:
             viber.send_messages(u.viber_id, [TextMessage(text="Пора учить слова", keyboard=KEYBOARD,
                                                          tracking_data='tracking_data')])
 	session.close()
