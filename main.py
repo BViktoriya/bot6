@@ -288,7 +288,7 @@ def incoming():
                 game.count_all = 0
                 game.count_correct = 0
                 question(game)
-            # вызов примера использования
+            # показать пример использования
             elif viber_request.message.text == "Пример использования":
                 global count_example
                 example(game, count_example)
